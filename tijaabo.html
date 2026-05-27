@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IT BSC Exit Exam Quiz</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+  :root {
+    --blue: #185FA5;
+    --blue-light: #E6F1FB;
+    --blue-mid: #378ADD;
+    --blue-dark: #0C447C;
+    --green-bg: #EAF3DE;
+    --green-border: #639922;
+    --green-text: #27500A;
+    --red-bg: #FCEBEB;
+    --red-border: #E24B4A;
+    --red-text: #791F1F;
+    --gray: #888780;
+    --radius: 10px;
+    --radius-sm: 7px;
+    --border: 1px solid #e0ddd5;
+    --shadow: 0 2px 16px rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f5f3ee;
+    min-height: 100vh;
+    color: #1a1a1a;
+  }
+
+  /* ---- TOP BAR ---- */
+  .topbar {
+    background: var(--blue);
+    color: #fff;
+    padding: 0 24px;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .topbar-title { font-size: 15px; font-weight: 600; letter-spacing: 0.3px; }
+  .topbar-sub { font-size: 12px; opacity: 0.75; }
+  .timer-badge {
+    background: rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .timer-badge.warning { background: rgba(255,80,80,0.35); }
+
+  /* ---- SCREENS ---- */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ---- LOGIN ---- */
+  .login-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    background: linear-gradient(135deg, #1a3a5c 0%, #185FA5 60%, #2980b9 100%);
+  }
+  .login-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  }
+  .login-logo {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .logo-circle {
+    width: 70px; height: 70px;
+    border-radius: 50%;
+    background: var(--blue-light);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1rem;
+    border: 2px solid var(--blue-mid);
+  }
+  .logo-circle i { font-size: 32px; color: var(--blue); }
+  .login-logo h1 { font-size: 20px; font-weight: 700; color: #1a1a1a; }
+  .login-logo p { font-size: 13px; color: #666; margin-top: 4px; }
+  .login-stats {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin: 1rem 0 1.5rem;
+  }
+  .stat-chip {
+    background: var(--blue-light);
+    color: var(--blue-dark);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .field { margin-bottom: 1.1rem; }
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 6px;
+  }
+  .field input {
+    width: 100%;
+    padding: 11px 14px;
+    font-size: 14px;
+    border: 1.5px solid #ddd;
+    border-radius: var(--radius-sm);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .field input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(24,95,165,0.1); }
+  .err-box {
+    background: var(--red-bg);
+    border: 1px solid var(--red-border);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--red-text);
+    margin-bottom: 1rem;
+    display: none;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-login {
+    width: 100%;
+    padding: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn-login:hover { background: var(--blue-dark); }
+  .btn-login:active { transform: scale(0.98); }
+  .login-hint {
+    text-align: center;
+    font-size: 12px;
+    color: #999;
+    margin-top: 1rem;
+  }
+
+  /* ---- QUIZ LAYOUT ---- */
+  .quiz-layout {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 4rem;
+    display: grid;
+    grid-template-columns: 1fr 240px;
+    gap: 1.25rem;
+    align-items: start;
+  }
+  @media (max-width: 700px) {
+    .quiz-layout { grid-template-columns: 1fr; }
+    .sidebar { order: -1; }
+  }
+
+  /* ---- QUESTION CARD ---- */
+  .q-card {
+    background: #fff;
+    border-radius: var(--radius);
+    border: var(--border);
+    box-shadow: var(--shadow);
+    padding: 1.75rem;
+  }
+  .q-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f0ede6;
+  }
+  .q-label {
+    background: var(--blue);
+    color: #fff;
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .q-flag {
+    font-size: 12px;
+    color: var(--gray);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    border: 1px solid #ddd;
+    background: #fff;
+    transition: all 0.15s;
+  }
+  .q-flag:hover { background: #fff8f0; border-color: #f0a020; color: #c07010; }
+  .q-flag.flagged { background: #fff8f0; border-color: #f0a020; color: #c07010; }
+  .q-text {
+    font-size: 15.5px;
+    line-height: 1.65;
+    color: #1a1a1a;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+  }
+  .opt {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 11px 14px;
+    margin-bottom: 9px;
+    border: 1.5px solid #e8e5de;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 14px;
+    color: #1a1a1a;
+    transition: all 0.15s;
+    line-height: 1.5;
+  }
+  .opt:hover { background: var(--blue-light); border-color: var(--blue-mid); }
+  .opt.sel { background: var(--blue-light); border-color: var(--blue-mid); color: var(--blue-dark); }
+  .opt.correct { background: var(--green-bg); border-color: var(--green-border); color: var(--green-text); }
+  .opt.wrong { background: var(--red-bg); border-color: var(--red-border); color: var(--red-text); }
+  .opt-letter {
+    min-width: 26px; height: 26px;
+    border-radius: 50%;
+    background: #f0ede6;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .opt.sel .opt-letter { background: var(--blue); color: #fff; }
+  .opt.correct .opt-letter { background: var(--green-border); color: #fff; }
+  .opt.wrong .opt-letter { background: var(--red-border); color: #fff; }
+
+  .explain-box {
+    background: #f7f9ff;
+    border-left: 4px solid var(--blue);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 12px 16px;
+    margin-top: 1rem;
+    font-size: 13.5px;
+    color: #333;
+    line-height: 1.65;
+    display: none;
+  }
+  .explain-box.show { display: block; }
+  .explain-box strong { color: var(--blue-dark); }
+
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #f0ede6;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .btn-nav {
+    padding: 9px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1.5px solid #ddd;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    background: #fff;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s;
+  }
+  .btn-nav:hover { background: #f5f3ee; border-color: #bbb; }
+  .btn-nav:disabled { opacity: 0.35; cursor: not-allowed; }
+  .btn-submit {
+    padding: 9px 22px;
+    font-size: 13px;
+    font-weight: 600;
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.15s;
+  }
+  .btn-submit:hover { background: var(--blue-dark); }
+
+  /* ---- SIDEBAR ---- */
+  .sidebar { display: flex; flex-direction: column; gap: 1rem; }
+  .side-card {
+    background: #fff;
+    border-radius: var(--radius);
+    border: var(--border);
+    box-shadow: var(--shadow);
+    padding: 1.25rem;
+  }
+  .side-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .progress-bar {
+    height: 6px;
+    background: #eee;
+    border-radius: 3px;
+    margin-bottom: 6px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--blue);
+    border-radius: 3px;
+    transition: width 0.3s;
+  }
+  .progress-text { font-size: 12px; color: var(--gray); text-align: right; }
+  .qgrid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 4px;
+  }
+  .qgrid-btn {
+    height: 26px;
+    font-size: 10px;
+    font-weight: 500;
+    border: 1px solid #e0ddd5;
+    border-radius: 5px;
+    cursor: pointer;
+    background: #fff;
+    color: #888;
+    transition: all 0.12s;
+  }
+  .qgrid-btn:hover { background: var(--blue-light); border-color: var(--blue-mid); color: var(--blue); }
+  .qgrid-btn.answered { background: var(--blue-light); border-color: var(--blue-mid); color: var(--blue-dark); font-weight: 700; }
+  .qgrid-btn.cur { background: var(--blue); border-color: var(--blue); color: #fff; font-weight: 700; }
+  .qgrid-btn.flagged-q { border-color: #f0a020; background: #fff8f0; }
+  .legend { display: flex; flex-direction: column; gap: 5px; margin-top: 8px; }
+  .legend-item { display: flex; align-items: center; gap: 7px; font-size: 11px; color: #666; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+
+  /* ---- RESULT ---- */
+  .result-page {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 2rem 1rem 4rem;
+  }
+  .result-hero {
+    background: #fff;
+    border-radius: var(--radius);
+    border: var(--border);
+    box-shadow: var(--shadow);
+    padding: 2.5rem 2rem;
+    text-align: center;
+    margin-bottom: 1.25rem;
+  }
+  .score-ring {
+    width: 110px; height: 110px;
+    border-radius: 50%;
+    border: 7px solid var(--blue);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    margin: 0 auto 1.25rem;
+    background: var(--blue-light);
+  }
+  .score-num { font-size: 30px; font-weight: 700; color: var(--blue); }
+  .score-den { font-size: 13px; color: #666; }
+  .result-title { font-size: 22px; font-weight: 700; color: #1a1a1a; margin-bottom: 6px; }
+  .result-pct { font-size: 15px; color: #555; margin-bottom: 1.5rem; }
+  .result-stats {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 1.75rem;
+  }
+  .rst { text-align: center; }
+  .rst-val { font-size: 24px; font-weight: 700; }
+  .rst-lbl { font-size: 12px; color: #888; }
+  .result-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .btn-outline {
+    padding: 10px 22px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1.5px solid #ddd;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    background: #fff;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s;
+  }
+  .btn-outline:hover { background: #f5f3ee; }
+
+  /* ---- REVIEW ---- */
+  .review-section { margin-top: 1.25rem; }
+  .rev-card {
+    background: #fff;
+    border-radius: var(--radius);
+    border: var(--border);
+    box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 0.9rem;
+  }
+  .rev-num { font-size: 11px; color: var(--gray); font-weight: 600; margin-bottom: 5px; }
+  .rev-q { font-size: 14px; font-weight: 600; color: #1a1a1a; margin-bottom: 10px; line-height: 1.5; }
+  .rev-ans {
+    font-size: 13px;
+    padding: 7px 12px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 5px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    line-height: 1.5;
+  }
+  .rev-ans.correct { background: var(--green-bg); color: var(--green-text); }
+  .rev-ans.wrong { background: var(--red-bg); color: var(--red-text); }
+  .rev-ans.skip { background: #f5f3ee; color: var(--gray); }
+  .rev-explain {
+    font-size: 12.5px;
+    color: #555;
+    margin-top: 8px;
+    line-height: 1.6;
+    padding: 8px 12px;
+    background: #f7f9ff;
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--blue-mid);
+  }
+</style>
+</head>
+<body>
+
+<!-- ====== LOGIN ====== -->
+<div id="loginScreen" class="screen active">
+  <div class="login-page">
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="logo-circle"><i class="ti ti-school"></i></div>
+        <h1>IT BSC Exit Exam</h1>
+        <p>Information Technology — Bachelor of Science</p>
+      </div>
+      <div class="login-stats">
+        <div class="stat-chip"><i class="ti ti-help-circle"></i> 100 Su'aalood</div>
+        <div class="stat-chip"><i class="ti ti-clock"></i> 2:30:00</div>
+      </div>
+      <div class="err-box" id="loginErr">
+        <i class="ti ti-alert-circle"></i>
+        <span>Username ama password khalad ah. Isku day mar kale.</span>
+      </div>
+      <div class="field">
+        <label><i class="ti ti-user" style="font-size:13px"></i> Username</label>
+        <input type="text" id="uname" placeholder="Username geli..." autocomplete="off" />
+      </div>
+      <div class="field">
+        <label><i class="ti ti-lock" style="font-size:13px"></i> Password</label>
+        <input type="password" id="pw" placeholder="Password geli..." />
+      </div>
+      <button class="btn-login" onclick="doLogin()">
+        <i class="ti ti-login"></i> Gal — Bilow Imtixaanka
+      </button>
+      <p class="login-hint">Demo: <strong>student</strong> / <strong>1234</strong> &nbsp;|&nbsp; <strong>admin</strong> / <strong>admin123</strong></p>
+    </div>
+  </div>
+</div>
+
+<!-- ====== QUIZ ====== -->
+<div id="quizScreen" class="screen">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">IT BSC Exit Exam</div>
+      <div class="topbar-sub" id="topMeta">Su'aal 1 / 100</div>
+    </div>
+    <div class="timer-badge" id="timerEl">
+      <i class="ti ti-clock"></i> <span id="timerTxt">2:30:00</span>
+    </div>
+  </div>
+  <div class="quiz-layout">
+    <!-- Main question -->
+    <div>
+      <div class="q-card">
+        <div class="q-top">
+          <span class="q-label" id="qLabel">Su'aal 1</span>
+          <button class="q-flag" id="flagBtn" onclick="toggleFlag()">
+            <i class="ti ti-flag"></i> <span id="flagTxt">Flag</span>
+          </button>
+        </div>
+        <div class="q-text" id="qText"></div>
+        <div id="opts"></div>
+        <div class="explain-box" id="explBox"></div>
+        <div class="nav-row">
+          <button class="btn-nav" id="bPrev" onclick="prevQ()" disabled>
+            <i class="ti ti-arrow-left"></i> Hore
+          </button>
+          <span style="font-size:13px;color:#888" id="qCounter">1 / 100</span>
+          <button class="btn-nav" id="bNext" onclick="nextQ()">
+            Xiga <i class="ti ti-arrow-right"></i>
+          </button>
+          <button class="btn-submit" id="bSub" onclick="confirmSubmit()" style="display:none">
+            <i class="ti ti-send"></i> Gudbi
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="side-card">
+        <div class="side-title"><i class="ti ti-chart-bar"></i> Horumarinta</div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progFill" style="width:1%"></div>
+        </div>
+        <div class="progress-text" id="progTxt">0 / 100 la jawaabay</div>
+      </div>
+      <div class="side-card">
+        <div class="side-title"><i class="ti ti-grid-dots"></i> Su'aalaha Dhammaan</div>
+        <div class="qgrid" id="qgrid"></div>
+        <div class="legend">
+          <div class="legend-item">
+            <div class="legend-dot" style="background:var(--blue-light);border:1px solid var(--blue-mid)"></div>
+            <span>La jawaabay</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background:var(--blue);border:1px solid var(--blue)"></div>
+            <span>Hadda joogta</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background:#fff8f0;border:1px solid #f0a020"></div>
+            <span>La calaamadeeyay</span>
+          </div>
+        </div>
+      </div>
+      <div class="side-card">
+        <button class="btn-submit" style="width:100%;justify-content:center;padding:11px" onclick="confirmSubmit()">
+          <i class="ti ti-send"></i> Gudbi Imtixaanka
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== RESULT ====== -->
+<div id="resultScreen" class="screen">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">IT BSC Exit Exam — Natiijada</div>
+    </div>
+    <button onclick="logout()" style="background:rgba(255,255,255,0.2);border:none;color:#fff;padding:6px 14px;border-radius:20px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:5px">
+      <i class="ti ti-logout"></i> Ka bax
+    </button>
+  </div>
+  <div class="result-page">
+    <div class="result-hero">
+      <div class="score-ring">
+        <span class="score-num" id="scN">0</span>
+        <span class="score-den" id="scD">/ 100</span>
+      </div>
+      <div class="result-title" id="resTitle">Quiz dhammaatay!</div>
+      <div class="result-pct" id="resSub"></div>
+      <div class="result-stats">
+        <div class="rst"><div class="rst-val" id="stC" style="color:var(--green-border)">0</div><div class="rst-lbl"><i class="ti ti-check"></i> Sax</div></div>
+        <div class="rst"><div class="rst-val" id="stW" style="color:var(--red-border)">0</div><div class="rst-lbl"><i class="ti ti-x"></i> Khalad</div></div>
+        <div class="rst"><div class="rst-val" id="stS" style="color:#bbb">0</div><div class="rst-lbl"><i class="ti ti-minus"></i> Skip</div></div>
+      </div>
+      <div class="result-actions">
+        <button class="btn-submit" onclick="showReview()">
+          <i class="ti ti-list-check"></i> Dib u eeg jawabaha
+        </button>
+        <button class="btn-outline" onclick="retake()">
+          <i class="ti ti-refresh"></i> Dib u bilow
+        </button>
+        <button class="btn-outline" onclick="logout()">
+          <i class="ti ti-logout"></i> Ka bax
+        </button>
+      </div>
+    </div>
+    <div class="review-section" id="reviewWrap" style="display:none"></div>
+  </div>
+</div>
+
+<script>
+const USERS = { student: "1234", admin: "admin123", teacher: "teach2024" };
+
+const QS = [
+  {q:"Which data model stores information in the form of rows and columns, called a relation?",opts:["Network data model","Object data model","Hierarchical model","Relational data model"],a:3,e:"The relational data model organizes data into tables (relations) consisting of rows and columns. This is the foundation of SQL databases like MySQL, PostgreSQL, and Oracle."},
+  {q:"The process of converting original data into cipher text or unreadable format is called?",opts:["Decryption","Encryption","Plain text","Cipher text"],a:1,e:"Encryption converts readable plaintext into unreadable ciphertext using an algorithm and key. Decryption is the reverse — converting ciphertext back to readable data."},
+  {q:"What does 'loss of confidentiality threats' refer to in database security?",opts:["Information disclosure to unauthorized user","When the system corrupted could result in inaccuracy","When the user program cannot access data object","Unauthorized changes are made to the database"],a:0,e:"Loss of confidentiality means sensitive information is accessed or disclosed by unauthorized users. The other options describe integrity loss and availability loss respectively."},
+  {q:"A collection of web pages is called?",opts:["URL","HTML page","Website","Web browser"],a:2,e:"A website is a collection of related web pages hosted on a web server, accessible through a domain name. A URL is an address; a browser is the tool to view pages."},
+  {q:"Which query optimization approach uses constraints specified on the database?",opts:["Heuristic","Semantic","Rule-based","Cost-based"],a:1,e:"Semantic query optimization uses integrity constraints and semantic knowledge about the database schema to transform queries into more efficient equivalents."},
+  {q:"An interface where users engage with a 3D design space through bodily motions is called?",opts:["Image-controlled interfaces","Gesture-based interfaces","Voice-controlled interfaces","Graphical user interfaces"],a:1,e:"Gesture-based interfaces detect body movements and hand gestures to interact with digital systems, commonly used in VR, AR, and interactive installations."},
+  {q:"Which of the following is NOT true about Collections in Java?",opts:["Attempting to insert a null element causes a NullPointerException","A Set can contain duplicate values","A Map cannot contain duplicate keys","A LinkedList can contain duplicate values"],a:1,e:"A Set by definition does NOT allow duplicate values — enforcing uniqueness is its core property. LinkedList and most List types do allow duplicates."},
+  {q:"Which is the correct HTML tag to create an ordered list with Cyber Security, Data Science, Cloud Computing?",opts:["<ol><li>Cyber security</li><li>Data science</li><li>Cloud computing</li></ol>","<li><ol>Cyber security</ol><ol>Data science</ol><ol>Cloud computing</ol></li>","<ol><li>Cyber security</li><li>Data science</ol><ol>Cloud computing</li></ol>","<ul><li>Cyber security</li><li>Data science</li><li>Cloud computing</li></ul>"],a:0,e:"<ol> creates an ordered (numbered) list; <ul> creates unordered (bulleted). Each item uses <li>. The correct nesting is <ol> wrapping properly closed <li> elements."},
+  {q:"Which is the default subnet mask for an IPv4 Class C network?",opts:["255.255.255.224","255.255.0.0","255.0.0.0","255.255.255.0"],a:3,e:"Class C networks (192.0.0.0–223.255.255.255) use a /24 prefix by default, which equals 255.255.255.0 subnet mask, providing 254 usable host addresses."},
+  {q:"System development methodology created to radically decrease the time needed to design and implement information systems is called?",opts:["Joint application development","Rapid application development","Prototyping","Iterative development"],a:1,e:"Rapid Application Development (RAD) uses time-boxed cycles, intensive prototyping, and active user involvement to deliver systems much faster than traditional methods."},
+  {q:"Which layer is responsible for process-to-process delivery in the OSI network model?",opts:["Network layer","Transport layer","Session layer","Application layer"],a:1,e:"The Transport layer (Layer 4) handles end-to-end process-to-process communication using port numbers. Key protocols: TCP (reliable) and UDP (fast, unreliable)."},
+  {q:"Which layer of the OSI model is responsible for routing?",opts:["Data link layer","Network layer","Transport layer","Application layer"],a:1,e:"The Network layer (Layer 3) handles logical addressing (IP addresses) and routing — determining the best path for packets to travel across interconnected networks. Routers operate here."},
+  {q:"A combo box drop-down style where there is no text box and you cannot add new items is called?",opts:["Simple","Checked list box","Drop-down","Drop-down list"],a:3,e:"Drop-down List style shows only predefined items with no editable text box. 'Drop-down' style allows typing; 'Simple' always shows the list open."},
+  {q:"Among the following, which is NOT a role of a proxy server?",opts:["Caching","Firewall","Content filters","File services"],a:3,e:"Proxy servers provide caching (storing frequently accessed content), content filtering, and can act as firewalls. File services (file sharing/storage) are not a proxy server function."},
+  {q:"What is the function of BIOS or firmware?",opts:["Store data during normal operation of the computer","Store instructions for booting the computer","Detect the hardware and allocate system resources","Provide a platform for applications and device drivers"],a:1,e:"BIOS (Basic Input/Output System) stores the boot instructions — it is the first code that runs when a computer powers on, initiating the boot process and loading the OS."},
+  {q:"Which Java keyword is used to handle (catch) an exception?",opts:["throws","void","catch","finally"],a:2,e:"The 'catch' block handles exceptions. 'throws' in a method signature declares exceptions it may throw. 'throw' raises an exception. 'finally' always executes regardless of outcome."},
+  {q:"An OOP concept where the same operation may apply to two or more classes in different ways is known as?",opts:["Abstraction","Inheritance","Encapsulation","Polymorphism"],a:3,e:"Polymorphism (many forms) allows the same method name to behave differently in different classes. Example: draw() works differently for Circle vs Rectangle — same interface, different behavior."},
+  {q:"Which database language allows the DBA to describe and name entities, attributes, and relationships?",opts:["Transaction control language (TCL)","Data control language (DCL)","Data manipulation language (DML)","Data definition language (DDL)"],a:3,e:"DDL (Data Definition Language) defines the database structure using CREATE, ALTER, DROP, and TRUNCATE statements. It describes schema structure, not the data itself."},
+  {q:"Which of the following is NOT true about interfaces in Java?",opts:["An interface specifies what operations are allowed but not how they are performed","All interface members must be public","Interfaces can be instantiated and implemented by classes","An interface declaration begins with the keyword interface"],a:2,e:"Interfaces CANNOT be instantiated — you cannot create an object directly from an interface using 'new'. Classes implement interfaces. The other three statements are all correct."},
+  {q:"The process of checking whether a user has the privilege for an access level is called?",opts:["Privilege","Permission","Authorization","Authentication"],a:2,e:"Authorization determines what an authenticated user is allowed to do (access rights). Authentication verifies identity (who you are). Together they form access control."},
+  {q:"Which statement clearly describes an object in object-oriented analysis and design?",opts:["It is a unit of program that houses a set of methods and attributes","It is something which is sent within a class","It is an abstraction of a real-world thing in which data and processes are placed together","It is a way to perform a task in a program"],a:2,e:"An object is an instance of a class — an abstraction of a real-world entity that combines data (attributes/state) and behavior (methods/operations) into one unit."},
+  {q:"Assume X=2, Y=4, Z=3. The result of Y^(X+Z)*2 is?",opts:["23","66","1024","2048"],a:2,e:"X+Z = 2+3 = 5. Y^5 = 4^5 = 1024. The commonly accepted answer for this question is 1024 (evaluating the exponentiation first)."},
+  {q:"What is the critical path in project planning or scheduling?",opts:["The amount of time an activity can be delayed without delaying the project","The shortest time in which a project can be completed","The entire time to complete the project","The largest time in which a project can be completed"],a:1,e:"The critical path is the longest chain of dependent tasks, defining the minimum project duration. Any delay on the critical path directly delays the overall project completion."},
+  {q:"Which statement is NOT true about a project in the context of information technology?",opts:["A project involves uncertainty","A project should have a primary customer or sponsor","A project requires resources such as people, hardware, software","A project has no definite beginning and ending time"],a:3,e:"A project MUST have a definite start and end date — this is one of its defining characteristics. This distinguishes temporary projects from ongoing operations."},
+  {q:"_____ is also called a dropdown box which provides options in a drop-down list from which a user can select?",opts:["Check box","Select control","Button","Radio button"],a:1,e:"The Select control (HTML <select>) creates a dropdown list. Checkboxes allow multiple independent selections. Radio buttons allow one selection from a group. Buttons trigger actions."},
+  {q:"Which of the following is NOT an array type in PHP programming?",opts:["Associative array","Multidimensional array","Single dimensional array","Indexed array"],a:2,e:"PHP has three official array types: indexed arrays (numeric keys), associative arrays (named string keys), and multidimensional arrays. 'Single dimensional array' is not a PHP array type name."},
+  {q:"What is the output of: String a='123'; System.out.println('result is ' + Integer.valueOf(a));",opts:["123","result is","result is 123","no output"],a:2,e:"Integer.valueOf('123') converts the string to the integer 123. When concatenated with 'result is ', it produces 'result is 123'. This is valid Java that runs without error."},
+  {q:"A graphical representation of a project showing tasks as horizontal bars proportional to time is called?",opts:["Network diagram","Sequence diagram","Class diagram","Gantt chart"],a:3,e:"A Gantt chart displays project tasks as horizontal bars on a timeline, showing start/end dates, duration, and dependencies. It is the most widely used project scheduling tool."},
+  {q:"Which of the following is NOT used to write comments in PHP code?",opts:["#","//","/* */","<!-- -->"],a:3,e:"PHP uses # (single-line), // (single-line), and /* */ (multi-line) for comments. <!-- --> is an HTML comment — it does NOT work as a PHP comment inside PHP code blocks."},
+  {q:"The implementation of an operation in object-oriented programming is called?",opts:["Object","Process","Class","Method"],a:3,e:"A method is the concrete implementation of an operation within a class. It defines how the operation is carried out — the behavior of objects."},
+  {q:"The physical representation of the database on the computer refers to?",opts:["Internal level","Conceptual level","External level","Middle level"],a:0,e:"The internal (physical) level describes how data is physically stored — file structures, indexes, storage paths, and data compression. The three-level ANSI architecture: external → conceptual → internal."},
+  {q:"With 20 nodes in full mesh topology, how many cables are required?",opts:["20","190","138","Unlimited"],a:1,e:"Full mesh topology formula: n(n-1)/2 cables. For 20 nodes: 20×19÷2 = 190 cables. Each node directly connects to every other node, providing maximum redundancy."},
+  {q:"Which of the following organizations is an ISP in Ethiopia?",opts:["Ethio-telecom","Ministry of Education","Immigration authority","Commercial Bank of Ethiopia"],a:0,e:"Ethio-telecom is Ethiopia's primary and historically state-owned Internet Service Provider (ISP), providing broadband, mobile internet, and telecommunications services nationwide."},
+  {q:"A computer which stores websites is called?",opts:["DNS server","File server","Web server","Web browser"],a:2,e:"A web server stores, processes, and delivers web pages to clients upon request. DNS servers resolve domain names to IP addresses. Web browsers are client applications."},
+  {q:"Given 192.16.1.1/27, which answer is correct?",opts:["The subnet mask for the network is 255.255.255.224","The given IP address is in Class B network","The usable host addresses in each subnet is 62","The total number of subnets is 16"],a:0,e:"/27 = 27 network bits, 5 host bits. Subnet mask = 255.255.255.224. Usable hosts = 2^5-2 = 30 (not 62). 192.x.x.x is Class C. This is a /27 network, giving 8 subnets in the last octet."},
+  {q:"An attribute whose value can be computed from related attribute values is called?",opts:["Required attribute","Derived attribute","Optional attribute","Multivalued attribute"],a:1,e:"A derived attribute is calculated from other stored attributes. Examples: Age (derived from Date of Birth), Total_salary (derived from hourly_rate × hours), BMI (from height and weight)."},
+  {q:"Which of the following is NOT a benefit of object-oriented techniques?",opts:["Increased extensibility","Reduced reusability","Reduced maintenance burden","Improved quality"],a:1,e:"Object-oriented techniques INCREASE reusability through classes, inheritance, and encapsulation — not reduce it. The other listed items are genuine OOP benefits."},
+  {q:"Which statement is NOT true about SELECT operation and PROJECT operation?",opts:["SELECT chooses some rows from the table while discarding others","PROJECT chooses some rows from the table while discarding others","Both SELECT and PROJECT can be used in a single query","PROJECT chooses certain columns and discards the other columns"],a:1,e:"PROJECT operates on columns (vertical slicing), not rows. It selects specific attributes/columns. SELECT operates on rows (horizontal slicing), filtering based on conditions."},
+  {q:"What is the correct pin color arrangement for straight-through cable (T568B)?",opts:["White-Orange→Orange→White-Green→Blue→White-Blue→Green→White-Brown→Brown","White-Orange→Green→White-Green→Blue→White-Blue→Orange→White-Brown→Brown","White-Brown→Green→White-Green→Blue→White-Blue→Orange→White-Orange→Brown","White-Orange→White-Green→Green→Blue→White-Blue→Orange→White-Brown→Brown"],a:0,e:"T568B straight-through standard (pins 1–8): White-Orange, Orange, White-Green, Blue, White-Blue, Green, White-Brown, Brown. Same order on both ends. Used to connect different devices."},
+  {q:"What is the function of the 'static' keyword in PHP?",opts:["To assign a constant value for a variable","To prevent a local variable from being destroyed between function calls","To access a global variable","To insert values into a form"],a:1,e:"In PHP, 'static' preserves a local variable's value between function calls. The variable is initialized only once and retains its value each time the function is called afterward."},
+  {q:"Which of the following properties of a relation is WRONG?",opts:["Rows may be interchanged or stored in any sequence","Entries in a given column are from the same set of values","An entry at intersection of each row and column has a single value","Each row is not unique because the relation has an empty primary key"],a:3,e:"In a valid relation, every row MUST be unique — identified by a primary key. Allowing duplicate rows or null primary keys violates relational integrity. The other three are valid relational properties."},
+  {q:"Which Java keyword is used to DECLARE that a method may throw an exception?",opts:["throws","void","catch","finally"],a:0,e:"'throws' in a method signature declares checked exceptions the method may throw (e.g., public void read() throws IOException). 'catch' handles exceptions; 'throw' explicitly raises one."},
+  {q:"Which of the following is false about if-else statements in Visual Basic?",opts:["The keywords else and end if must appear on lines by themselves","The else branch is optional","The keyword 'then' must appear on the same line as the word else","A block if statement must always end with an End If statement"],a:2,e:"'Then' belongs on the same line as 'If' (e.g., If x > 0 Then), NOT with 'Else'. The Else keyword stands alone on its own line. The other three statements are all true."},
+  {q:"Which method converts a string to a number or parses a text box value in VB.NET?",opts:["Parse","Globalization","ToString","Convert"],a:0,e:"The Parse method (e.g., Integer.Parse(TextBox1.Text)) converts a string representation to its numeric equivalent. If conversion fails, it throws a FormatException. ToString() does the reverse."},
+  {q:"Which of the following is NOT a service provided by a firewall?",opts:["Application monitoring","Record users","Access control","Packet filtering"],a:1,e:"Firewalls perform packet filtering, access control, and application-layer monitoring. Recording/auditing individual users is typically handled by dedicated authentication and audit logging systems."},
+  {q:"Software development model that builds software in increments, each adding functional capability, is called?",opts:["Prototyping model","Iterative model","Waterfall model","Spiral model"],a:1,e:"The Iterative model develops software in repeated cycles. Each iteration produces a working version with new features added, allowing for feedback and adjustment between iterations."},
+  {q:"A diagram showing the static structure of an OO model including classes, attributes, and relationships is called?",opts:["Activity diagram","Sequence diagram","Class diagram","Deployment diagram"],a:2,e:"A Class diagram shows classes with their attributes and methods, and the relationships between them (inheritance, association, dependency, composition). It depicts the system's static structure."},
+  {q:"Which is the correct arrangement of SDLC steps?",opts:["Planning→Design→Analysis→Implementation→Maintenance","Analysis→Planning→Design→Maintenance→Implementation","Planning→Analysis→Design→Maintenance→Implementation","Planning→Analysis→Design→Implementation→Maintenance"],a:3,e:"The correct SDLC order: Planning & Selection → Analysis → Design → Implementation → Maintenance & Operation. Each phase produces deliverables that feed into the next phase."},
+  {q:"Which is the special form of text box with properties to format data entered by a user?",opts:["Masked text box","Text box","Combo box","Label"],a:0,e:"A Masked Text Box applies an input mask to guide and restrict user input into a specific format (e.g., date MM/DD/YYYY, phone (###) ###-####). A plain text box accepts any free-form input."},
+  {q:"Which PHP function is used to include one PHP file into another?",opts:["include()","refer()","insert()","destroy()"],a:0,e:"include() embeds a PHP file within another at runtime. Related: require() causes fatal error if file is missing; include_once()/require_once() prevent duplicate inclusion of the same file."},
+  {q:"What is the primary function of a firewall?",opts:["To increase internet speed","To prevent unauthorized access to or from a network","To improve user interface","To store data"],a:1,e:"A firewall monitors and filters incoming and outgoing network traffic based on predefined security rules, acting as a barrier between trusted internal networks and untrusted external networks."},
+  {q:"Which layer of the OSI model is responsible for routing? (repeated concept)",opts:["Application layer","Transport layer","Network layer","Data link layer"],a:2,e:"The Network layer (Layer 3) performs logical addressing with IP addresses and routing — finding the best path for data packets across multiple interconnected networks."},
+  {q:"Which statement clearly describes an object in OOP? (repeated concept)",opts:["It is a unit of program that houses a set of methods and attributes","It is something which is sent within a class","It is an abstraction of a real-world thing where data and processes are combined","It is a way to perform a task in a program"],a:2,e:"An object is a concrete instance of a class that models a real-world entity, combining state (data/attributes) and behavior (methods/operations) into a single entity."},
+  {q:"Which HTML tag displays the largest heading?",opts:["<h5>","<h4>","<h6>","<h1>"],a:3,e:"HTML headings range from <h1> (largest, most important) to <h6> (smallest, least important). Best practice: use <h1> once per page for the main title for SEO and accessibility."},
+  {q:"What is the application/purpose of DHCP?",opts:["Assign IP address","Transfer webpage","Name service","Mail transfer"],a:0,e:"DHCP (Dynamic Host Configuration Protocol) automatically assigns IP addresses, subnet masks, default gateways, and DNS server information to devices joining a network."},
+  {q:"Which Android library is used for string and number conversion tasks?",opts:["android.text","android.util","android.app","android.database"],a:1,e:"android.util provides utility classes including TypedValue for unit conversions, SparseArray, Pair, Log for debugging, and various data type conversion utilities."},
+  {q:"Among the following, which is NOT a use of remote administration?",opts:["It is free from attackers/hackers","Install software on another computer","Remotely run a program or copy a file","Remotely connect to another machine to troubleshoot"],a:0,e:"Remote administration is actually a security risk if not properly secured — it is NOT inherently free from hackers. Attackers can exploit remote admin tools. The other three are legitimate uses."},
+  {q:"To create an object from a class in Java, which keyword do you use?",opts:["Scanner","new","public","class"],a:1,e:"The 'new' keyword allocates heap memory and creates an object instance by calling the class constructor. Example: Car myCar = new Car(); creates a new Car object."},
+  {q:"Which is NOT true about PHP GET, POST, and REQUEST methods?",opts:["Information sent with GET method is visible to everyone","POST method has restriction on data size to be sent","Information sent with POST method is visible to others","REQUEST can be used to get results from both GET and POST"],a:2,e:"POST data is NOT visible to others — it's sent in the HTTP request body, not in the URL. GET data appears in the URL and is visible to everyone (browser history, logs, etc.)."},
+  {q:"Which method removes an item from a combo box/list box by specifying the index position?",opts:["Items.Delete()","Items.RemoveAt()","Items.Remove()","Items.Clear()"],a:1,e:"Items.RemoveAt(index) removes the item at a specific index position. Items.Remove(item) removes by matching item value. Items.Clear() removes ALL items at once."},
+  {q:"The Linux command used to change from one directory to another is?",opts:["dir","cd","chdir","chmod"],a:1,e:"'cd' (change directory) navigates between directories in Linux/Unix. 'dir' is a Windows/DOS command. 'chmod' changes file permissions. 'chdir' is a C library function, not a standard shell command."},
+  {q:"Systems development projects are undertaken for what primary reason?",opts:["To take advantage of business opportunities and solve business problems","To support business processes by the system","To reduce manual business operations","To develop software and get money from companies"],a:0,e:"The primary reason for IS projects is to address business needs — either to capitalize on new opportunities (competitive advantage, new markets) or to solve existing business problems."},
+  {q:"Which of the following is DIFFERENT from the others in storage category?",opts:["CD and DVD drives","Floppy disks","Hard disks","Tape drives"],a:2,e:"CD/DVD drives, floppy disks, and tape drives are all removable/portable sequential or optical media. Hard disks are fixed internal storage devices with random access — making them the different category."},
+  {q:"Which is the correct procedure series for troubleshooting computer problems?",opts:["Identify problem→Analyze→Isolate cause→Apply solution","Identify problem→Analyze→Apply solution→Isolate cause","Analyze→Identify→Apply solution→Isolate cause","Apply solution→Isolate cause→Identify→Analyze"],a:0,e:"Standard troubleshooting steps: 1) Identify the problem (symptoms), 2) Analyze (gather information), 3) Isolate the cause (test hypotheses), 4) Apply the solution. This prevents trial-and-error guesswork."},
+  {q:"Which is an advantage of Windows OS over Linux OS?",opts:["Open source","Free","Highly secured","User-friendly"],a:3,e:"Windows is renowned for its user-friendly graphical interface and broad hardware/software compatibility. Linux advantages include being open source, free, more secure, and customizable."},
+  {q:"A visibility type enabling class members to be accessed by subclasses in any package is called?",opts:["Public","Default","Protected","Private"],a:2,e:"Protected visibility allows access within the same class, by subclasses in any package, and classes in the same package. 'Default' (no modifier) restricts access to the same package only."},
+  {q:"A process that runs in the background without a user interface in Android is called?",opts:["Android Services","Android Activities","Android Intents","Android Content Providers"],a:0,e:"Android Services run background operations without any UI (e.g., music playback, file downloads). Activities have UI; Intents are messaging objects for communication; Content Providers share data."},
+  {q:"The extent to which a subsystem performs a single, well-defined function refers to?",opts:["Modularity","Coupling","Decomposition","Cohesion"],a:3,e:"Cohesion measures how closely related the responsibilities of a single module are. High cohesion (single purpose) is desired. Coupling measures inter-module dependency (low coupling is desired)."},
+  {q:"What is the purpose of assessing economic feasibility during system development?",opts:["To understand how stakeholders view the proposed system","To identify financial benefits and costs associated with development","To understand the organization's ability to construct the system","To understand how the system will solve the business problem"],a:1,e:"Economic feasibility (cost-benefit analysis) determines whether the financial benefits justify the development costs, including ROI calculation, payback period, and total cost of ownership."},
+  {q:"Which statement is NOT true about constructors in Java?",opts:["Constructors can specify parameters but not return types","Java does not require a constructor call for every object created","If a class does not define a constructor, the compiler provides a default one","A constructor must have the same name as the class itself"],a:1,e:"Java DOES require a constructor call for every object creation — the 'new' keyword always invokes a constructor. If none is explicitly defined, the compiler auto-generates a default no-argument constructor."},
+  {q:"Which memory type is slowest to access?",opts:["Cache memory","Magnetic tape","Random access memory","Hard disk"],a:1,e:"Memory hierarchy from fastest to slowest: Registers → Cache → RAM → Hard disk → Magnetic tape. Magnetic tape is sequential-access (must spool to position), making random access extremely slow."},
+  {q:"Which is the correct sequence for processing a high-level database query?",opts:["Parsing→Validating→Optimizing→Executing","Parsing→Validating→Executing→Optimizing","Optimizing→Parsing→Validating→Executing","Parsing→Optimizing→Validating→Executing"],a:0,e:"Query processing pipeline: 1) Parse (check syntax), 2) Validate (check against schema/semantics), 3) Optimize (find best execution plan), 4) Execute (run and return results)."},
+  {q:"Which Cisco IOS command creates VLAN 3 named HRM on a switch?",opts:["Switch#vlan 3 then Switch#name HRM","Switch#Number vlan 3 then Switch#Vlan name HRM","Switch#Number vlan 3 then Switch#HRM","Switch#vlan 3, HRM"],a:0,e:"In Cisco IOS: Switch(config)#vlan 3 creates the VLAN, then Switch(config-vlan)#name HRM assigns its name. These two commands in sequence create and name VLAN 3 as HRM."},
+  {q:"What is the goal of query optimization?",opts:["To select the best possible strategy for query evaluation","To increase the total execution time of a query","To transform a query from high-level to low-level language","To choose a strategy that maximizes resource usage"],a:0,e:"Query optimization selects the most efficient execution plan from multiple alternatives — minimizing CPU time, I/O operations, memory usage, and total response time."},
+  {q:"Which operation is the most time-consuming in query processing?",opts:["Projection","Aggregation","Join","Selection"],a:2,e:"JOIN is the most expensive operation because it must match rows across multiple tables, potentially comparing millions of record combinations with high I/O and CPU costs."},
+  {q:"Which shows correct protocol-to-port number pairings?",opts:["FTP 23","HTTPS 43","HTTP 80","Telnet 21"],a:2,e:"HTTP = 80, HTTPS = 443, FTP = 21 (control)/20 (data), Telnet = 23. Other key ports: SSH=22, SMTP=25, DNS=53, DHCP=67/68, POP3=110, IMAP=143."},
+  {q:"A project constraint answering 'what work will be done as part of the project' is called?",opts:["Cost","Scope","Budget","Time"],a:1,e:"Scope defines what is included in and excluded from the project. The triple constraint (iron triangle) of project management: Scope + Time + Cost — changes in one affect the others."},
+  {q:"A detailed logical representation of entities, associations, and data elements for a business area is called?",opts:["Sequence diagram","Entity-relationship model","Data-flow diagram","Class diagram"],a:1,e:"An Entity-Relationship (ER) model is a logical data modeling technique showing entities (things), their attributes (properties), and relationships (associations) — fundamental to database design."},
+  {q:"Which is NOT true about markup languages?",opts:["They can use text editors like Notepad","It is a programming language","It is a web development language","HTML and XML are examples of markup languages"],a:1,e:"Markup languages (HTML, XML, Markdown) are NOT programming languages. They define structure and formatting using tags/annotations but lack computational capabilities like loops and conditionals."},
+  {q:"Which of the following is NOT a necessary condition for a deadlock to occur?",opts:["Mutual exclusion","Hold and wait","Preemption","Circular wait"],a:2,e:"The four Coffman conditions required for deadlock: Mutual exclusion, Hold and wait, No preemption, and Circular wait. PREEMPTION being PRESENT prevents deadlock — so 'preemption' itself is NOT a deadlock condition."},
+  {q:"Which of the following is true about IPv4?",opts:["It uses the hexadecimal numbering system","It has 32-bit addresses","It is more useful for mobile users compared with IPv6","It accommodates more users compared with IPv6"],a:1,e:"IPv4 uses 32-bit addresses written in dotted decimal (e.g., 192.168.1.1), providing about 4.3 billion addresses. IPv6 uses 128-bit hexadecimal addresses, accommodating vastly more devices."},
+  {q:"Third Normal Form (3NF) requires that a relation table?",opts:["Non-primary key attributes depend on each other (transitive dependencies)","Key attributes are functionally dependent only upon non-primary keys","Be in 2NF and have no transitive dependencies between non-primary key attributes","Be in 2NF and every non-key column is transitively dependent upon the primary key"],a:2,e:"3NF requires: (1) the table is in 2NF, and (2) no transitive dependencies exist — every non-key attribute must depend DIRECTLY on the primary key, not through another non-key attribute."},
+  {q:"_____ topology connects all devices along a single cable running in one direction.",opts:["Tree","Mesh","Star","Bus"],a:3,e:"Bus topology uses a single backbone cable to which all devices connect using taps. Data travels along the cable. A break anywhere affects all connected devices. Simple but not fault-tolerant."},
+  {q:"Which is NOT a benefit of IPsec?",opts:["It establishes extranet and intranet connectivity with partners","It provides strong security applied to all traffic crossing the perimeter","It minimizes electronic commerce security","It secures remote access over the internet"],a:2,e:"IPsec STRENGTHENS e-commerce security by providing authentication, data integrity, and encryption for IP-based communications — it does not minimize it. The other options are genuine IPsec benefits."},
+  {q:"Which cable type is fastest for data transmission?",opts:["STP","UTP","Coaxial","Fiber optic"],a:3,e:"Fiber optic cable transmits data as light pulses through glass/plastic fibers, achieving speeds up to 100 Gbps with minimal signal loss over long distances — far superior to copper cables."},
+  {q:"A measure to protect data during transmission over interconnected networks is called?",opts:["Internet security","Network security","Computer security","Information security"],a:1,e:"Network security encompasses policies, procedures, and technologies that protect data in transit and network infrastructure integrity — using firewalls, VPNs, encryption, and intrusion detection."},
+  {q:"What is the correct order of the TCP/IP model from bottom to top?",opts:["Application→Transport→Internet→Network Interface","Network Interface→Transport→Internet→Application","Transport→Application→Network Interface→Internet","Network Interface→Internet→Transport→Application"],a:3,e:"TCP/IP model layers from bottom to top: Network Interface (physical + data link) → Internet (IP routing) → Transport (TCP/UDP) → Application (HTTP, FTP, DNS, SMTP, etc.)."},
+  {q:"Which Android process state arrangement is correct from lowest to highest priority?",opts:["Empty→Background→Service→Visible→Foreground","Foreground→Visible→Service→Background→Empty","Foreground→Background→Visible→Empty→Service","Empty→Foreground→Background→Visible→Service"],a:0,e:"Android process priorities (lowest→highest): Empty process (no active components) → Background process (invisible activity) → Service process (running service) → Visible process (visible, not focused) → Foreground process (active user interaction)."},
+  {q:"Which HTML tag is the root element of an HTML page?",opts:["<body>","<head>","<title>","<html>"],a:3,e:"<html> is the root element that contains all other HTML elements. <head> holds metadata and resources; <body> holds visible content; <title> (inside <head>) sets the browser tab title."},
+  {q:"In normalization, what does the First Normal Form (1NF) require?",opts:["No duplicate rows","Single-valued (atomic) attributes","No transitive dependencies","No primary key"],a:1,e:"1NF requires each cell to contain only atomic (single, indivisible) values — no repeating groups or multi-valued attributes. It also requires each row to be uniquely identifiable. No transitive dependencies is 3NF."},
+  {q:"Which storage type has the fastest access time and highest cost?",opts:["Register","Main memory","Magnetic disc","Cache memory"],a:0,e:"Memory hierarchy (fastest/costliest → slowest/cheapest): CPU Registers → Cache (L1/L2/L3) → RAM → SSD → HDD → Tape. Registers are inside the CPU and have sub-nanosecond access times."},
+  {q:"What is the purpose of control structures like loops and conditional statements in programming?",opts:["To define the data types used in a program","To control the flow of program execution","To perform mathematical calculations","To allocate memory for variables"],a:1,e:"Control structures (if/else, for, while, switch) determine the path of program execution — controlling which statements run, how many times they repeat, and under what conditions they execute."},
+  {q:"Which is NOT a characteristic of Rapid Application Development (RAD)?",opts:["Programs are developed in a short time","It requires high or excess budget","There is a direct relationship between the developer and the user","It only suits small-scale projects"],a:1,e:"RAD is known for REDUCED cost and time, not excessive budget. RAD advantages: fast delivery, close developer-user collaboration, iterative prototyping. It's better suited for smaller, time-sensitive projects."},
+  {q:"An emulator that allows Android apps to be tested without a physical device is called?",opts:["Android Virtual Device","Android Emulators Device","Android Display Device","Android Application Device"],a:0,e:"Android Virtual Device (AVD) is the official emulator configured in Android Studio's AVD Manager. It simulates different Android hardware, screen sizes, and OS versions on your development computer."},
+  {q:"Which statement is NOT true in Java?",opts:["The remainder operation (%) can be used only with integer operands","The arithmetic operations *, /, %, +, – all have different levels of precedence","A Scanner enables a program to read data for use","All variables must be given a type when declared"],a:0,e:"The % (modulo/remainder) operator works with BOTH integers AND floating-point numbers in Java. For example, 5.5 % 2.0 = 1.5. Stating it only works with integers is FALSE."},
+  {q:"In networking, _____ refers to how nodes, devices, and connections are physically or logically arranged?",opts:["Network installation","Network protocol","Network topology","Network layer"],a:2,e:"Network topology describes the arrangement of network elements — both physical topology (actual cable layout) and logical topology (how data flows). Common types: star, bus, ring, mesh, hybrid."},
+  {q:"Which of the following is NOT a component of communication?",opts:["Source","Destination","Distance","Medium"],a:2,e:"The four essential communication components: Source (sender), Message (information), Medium (channel/transmission path), and Destination (receiver). Distance is a physical characteristic, not a component."},
+  {q:"The E-R data model is based on basic objects called?",opts:["Attributes","Entities","Objects","Classes"],a:1,e:"In the Entity-Relationship model, entities are the fundamental objects representing distinct real-world things or concepts (e.g., Student, Department, Product). Attributes describe properties of entities."},
+  {q:"Which type of JOIN includes all rows from the left table and matching rows from the right table?",opts:["Inner join","Left join","Right join","Full outer join"],a:1,e:"LEFT JOIN (LEFT OUTER JOIN) returns all rows from the left table. For each left row, if a match exists in the right table it's included; if not, NULL values fill the right-table columns."},
+  {q:"What is the term for a named block of code that performs a specific task?",opts:["Variable","Loop","Function","Condition"],a:2,e:"A function (also called method, procedure, or subroutine depending on the language) is a named, reusable code block that performs a defined task and can be called multiple times from different places."}
+];
+
+let cur=0, answers=new Array(100).fill(null), flags=new Array(100).fill(false);
+let timerSec=9000, timerInt=null;
+
+/* ----- LOGIN ----- */
+function doLogin(){
+  const u=document.getElementById('uname').value.trim();
+  const p=document.getElementById('pw').value;
+  const e=document.getElementById('loginErr');
+  if(USERS[u]&&USERS[u]===p){
+    e.style.display='none';
+    showScreen('quizScreen');
+    renderQ(); buildGrid(); startTimer();
+  } else {
+    e.style.display='flex';
+  }
+}
+document.getElementById('pw').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+document.getElementById('uname').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('pw').focus();});
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+/* ----- TIMER ----- */
+function startTimer(){
+  clearInterval(timerInt);
+  timerInt=setInterval(()=>{
+    if(timerSec<=0){clearInterval(timerInt);doSubmit();return;}
+    timerSec--;
+    const h=Math.floor(timerSec/3600),m=Math.floor((timerSec%3600)/60),s=timerSec%60;
+    const txt=`${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    document.getElementById('timerTxt').textContent=txt;
+    const badge=document.getElementById('timerEl');
+    badge.className='timer-badge'+(timerSec<600?' warning':'');
+  },1000);
+}
+
+/* ----- RENDER QUESTION ----- */
+function renderQ(){
+  const q=QS[cur];
+  document.getElementById('topMeta').textContent=`Su'aal ${cur+1} / ${QS.length}`;
+  document.getElementById('qLabel').textContent=`Su'aal ${cur+1}`;
+  document.getElementById('qText').textContent=q.q;
+  document.getElementById('qCounter').textContent=`${cur+1} / ${QS.length}`;
+
+  const flagBtn=document.getElementById('flagBtn');
+  flagBtn.className='q-flag'+(flags[cur]?' flagged':'');
+  document.getElementById('flagTxt').textContent=flags[cur]?'Flagged':'Flag';
+
+  const wrap=document.getElementById('opts');
+  wrap.innerHTML='';
+  const ls=['A','B','C','D'];
+  const answered=answers[cur]!==null;
+  q.opts.forEach((o,i)=>{
+    const d=document.createElement('div');
+    let cls='opt';
+    if(answered){
+      if(i===q.a)cls+=' correct';
+      else if(answers[cur]===i)cls+=' wrong';
+    } else if(answers[cur]===i)cls+=' sel';
+    d.className=cls;
+    d.innerHTML=`<span class="opt-letter">${ls[i]}</span><span>${o}</span>`;
+    if(!answered)d.onclick=()=>selectOpt(i);
+    wrap.appendChild(d);
+  });
+
+  const ex=document.getElementById('explBox');
+  ex.innerHTML=`<strong><i class="ti ti-bulb" style="font-size:14px"></i> Sharaxaad:</strong> ${q.e}`;
+  ex.className='explain-box'+(answered?' show':'');
+
+  document.getElementById('bPrev').disabled=(cur===0);
+  document.getElementById('bNext').style.display=cur<QS.length-1?'flex':'none';
+  document.getElementById('bSub').style.display=cur===QS.length-1?'flex':'none';
+
+  const answered_count=answers.filter(a=>a!==null).length;
+  document.getElementById('progFill').style.width=(answered_count/QS.length*100)+'%';
+  document.getElementById('progTxt').textContent=`${answered_count} / ${QS.length} la jawaabay`;
+
+  updateGrid();
+}
+
+function selectOpt(i){
+  answers[cur]=i;
+  renderQ();
+}
+
+function nextQ(){if(cur<QS.length-1){cur++;renderQ();}}
+function prevQ(){if(cur>0){cur--;renderQ();}}
+function toggleFlag(){flags[cur]=!flags[cur];renderQ();}
+
+/* ----- GRID ----- */
+function buildGrid(){
+  const g=document.getElementById('qgrid');g.innerHTML='';
+  for(let i=0;i<QS.length;i++){
+    const b=document.createElement('button');
+    b.className='qgrid-btn';b.textContent=i+1;
+    b.onclick=(()=>{const idx=i;return()=>{cur=idx;renderQ();}})();
+    g.appendChild(b);
+  }
+}
+function updateGrid(){
+  const btns=document.querySelectorAll('.qgrid-btn');
+  btns.forEach((b,i)=>{
+    let cls='qgrid-btn';
+    if(i===cur)cls+=' cur';
+    else if(answers[i]!==null)cls+=' answered';
+    if(flags[i])cls+=' flagged-q';
+    b.className=cls;
+  });
+}
+
+/* ----- SUBMIT ----- */
+function confirmSubmit(){
+  const unanswered=answers.filter(a=>a===null).length;
+  if(unanswered>0){
+    if(!confirm(`Wali ${unanswered} su'aalood la jawaabi waayo. Ma hubtaa inaad gudbin?\n\nOK = Gudbi\nCancel = Sii wad`))return;
+  }
+  doSubmit();
+}
+function doSubmit(){
+  clearInterval(timerInt);
+  let c=0,w=0,s=0;
+  QS.forEach((q,i)=>{
+    if(answers[i]===null)s++;
+    else if(answers[i]===q.a)c++;
+    else w++;
+  });
+  const pct=Math.round(c/QS.length*100);
+  document.getElementById('scN').textContent=c;
+  document.getElementById('scD').textContent='/ '+QS.length;
+  document.getElementById('stC').textContent=c;
+  document.getElementById('stW').textContent=w;
+  document.getElementById('stS').textContent=s;
+  const titles=pct>=80?'🎉 Aad u fiican! Waxaad dhaaftay!':pct>=60?'👍 Wanaagsan! Sii wad!':pct>=40?'📚 Wax badan baraneed':' Sii wad dhigashada';
+  document.getElementById('resTitle').textContent=titles;
+  document.getElementById('resSub').textContent=`Waxaad qaadatay ${pct}% — ${c} su'aalood oo sax ah ${QS.length} ka midka.`;
+  document.getElementById('reviewWrap').style.display='none';
+  showScreen('resultScreen');
+}
+
+function showReview(){
+  const w=document.getElementById('reviewWrap');
+  if(w.style.display==='block'){w.style.display='none';return;}
+  w.style.display='block';w.innerHTML='';
+  QS.forEach((q,i)=>{
+    const ua=answers[i],correct=ua===q.a,skipped=ua===null;
+    const ls=['A','B','C','D'];
+    let ansHtml='';
+    if(skipped){ansHtml=`<div class="rev-ans skip"><i class="ti ti-minus"></i>Skip la sameeyay — jawab la ma bixin</div>`;}
+    else if(correct){ansHtml=`<div class="rev-ans correct"><i class="ti ti-check"></i><span>${ls[ua]}. ${q.opts[ua]}</span></div>`;}
+    else{ansHtml=`<div class="rev-ans wrong"><i class="ti ti-x"></i><span>Jawabadaadii: ${ls[ua]}. ${q.opts[ua]}</span></div><div class="rev-ans correct"><i class="ti ti-check"></i><span>Saxda: ${ls[q.a]}. ${q.opts[q.a]}</span></div>`;}
+    const d=document.createElement('div');
+    d.className='rev-card';
+    d.innerHTML=`<div class="rev-num">Su'aal ${i+1}</div><div class="rev-q">${q.q}</div>${ansHtml}<div class="rev-explain">${q.e}</div>`;
+    w.appendChild(d);
+  });
+}
+
+function retake(){
+  answers=new Array(100).fill(null);flags=new Array(100).fill(false);
+  cur=0;timerSec=9000;
+  document.getElementById('reviewWrap').style.display='none';
+  showScreen('quizScreen');renderQ();buildGrid();startTimer();
+  window.scrollTo(0,0);
+}
+
+function logout(){
+  clearInterval(timerInt);
+  document.getElementById('uname').value='';document.getElementById('pw').value='';
+  answers=new Array(100).fill(null);flags=new Array(100).fill(false);cur=0;timerSec=9000;
+  showScreen('loginScreen');
+  document.getElementById('loginErr').style.display='none';
+}
+</script>
+</body>
+</html>
